@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
+<title>Quiz Venda Sem Estoque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500&display=swap">
+<style>
+/* Layout: coluna única centralizada (máx. 560px), uma tela por etapa: intro → quiz (3 perguntas, a última com cadastro) → vídeo + contato; amarelo só em CTA e destaque */
+:root{
+  --bg:#fafaf8; --surface:#ffffff; --ink:#0e0f12; --sub:#5d6068; --faint:#9a9ca3;
+  --line:#ebebe7; --line-2:#dcdcd6; --accent:#ffd400; --accent-ink:#0e0f12; --ok:#16a36a; --wa:#1faa59; --danger:#e5484d;
+  --sans:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --shadow:0 1px 2px rgba(14,15,18,.04), 0 12px 32px -12px rgba(14,15,18,.10);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b0c0e; --surface:#141518; --ink:#f4f4f2; --sub:#a1a3aa; --faint:#6c6e75;
+  --line:#22242a; --line-2:#2e3037; --accent-ink:#0b0c0e; --ok:#3ad08f; --wa:#2fc46c;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 40px -16px rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0c0e; --surface:#141518; --ink:#f4f4f2; --sub:#a1a3aa; --faint:#6c6e75;
+  --line:#22242a; --line-2:#2e3037; --accent-ink:#0b0c0e; --ok:#3ad08f; --wa:#2fc46c;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 40px -16px rgba(0,0,0,.6); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(32px,env(safe-area-inset-bottom,0px))}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+/* barra superior */
+.brand{display:flex;align-items:center;gap:10px;height:40px;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.brand b{width:32px;height:32px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 6px 16px -8px rgba(255,190,0,.9)}
+
+/* tipografia */
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:clamp(36px,9.5vw,54px);line-height:1.02;letter-spacing:-.045em;font-weight:800;margin:0;text-wrap:balance}
+h1 .hl{position:relative;white-space:nowrap;z-index:0;isolation:isolate}
+h1 .hl::after{content:"";position:absolute;left:-2px;right:-2px;bottom:.06em;height:.26em;background:var(--accent);z-index:-1;border-radius:2px}
+h2{font-size:clamp(26px,6.6vw,34px);line-height:1.12;letter-spacing:-.035em;font-weight:700;margin:0;text-wrap:balance}
+h3{font-size:19px;letter-spacing:-.02em;font-weight:650;margin:0}
+.lede{font-size:18px;color:var(--sub);margin:0;max-width:46ch;text-wrap:pretty}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:24px;margin-top:28px}
+
+/* intro */
+.hero{display:flex;flex-direction:column;gap:20px;padding-top:12px}
+.note{font-size:13.5px;color:var(--faint);text-align:center}
+
+/* botões */
+.btn{appearance:none;border:0;font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;height:58px;padding:0 24px;border-radius:14px;font-size:16.5px;font-weight:650;letter-spacing:-.01em;cursor:pointer;text-decoration:none;transition:transform .12s ease, box-shadow .2s ease, background .2s ease, opacity .2s}
+.btn-main{background:var(--accent);color:var(--accent-ink);box-shadow:0 1px 0 rgba(0,0,0,.08) inset, 0 8px 24px -10px rgba(255,190,0,.7)}
+.btn-wa{background:var(--wa);color:#fff;box-shadow:0 8px 24px -10px color-mix(in srgb,var(--wa) 80%,transparent)}
+.btn-line{background:var(--surface);color:var(--ink);border:1px solid var(--line-2)}
+@media (hover:hover){
+.btn-main:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(0,0,0,.08) inset, 0 12px 28px -10px rgba(255,190,0,.85)}
+.btn-wa:hover{transform:translateY(-1px)}
+.btn-line:hover{border-color:var(--ink)}
+}
+.btn:disabled{opacity:.6;cursor:progress}
+.btn:focus-visible,.opt:focus-visible,.link:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.btn .arr{transition:transform .2s}
+.btn:hover .arr{transform:translateX(3px)}
+
+/* perguntas */
+.qhead{display:flex;flex-direction:column;gap:18px}
+.segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.segs i{height:4px;border-radius:99px;background:var(--line-2);overflow:hidden;position:relative}
+.segs i::after{content:"";position:absolute;inset:0;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.segs i.on::after{transform:scaleX(1)}
+.qrow{display:flex;justify-content:space-between;align-items:center}
+.link{appearance:none;background:none;border:0;font:inherit;font-size:14px;font-weight:500;color:var(--sub);cursor:pointer;padding:4px 0}
+.link:hover{color:var(--ink)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{appearance:none;font:inherit;text-align:left;display:flex;align-items:center;gap:16px;width:100%;min-height:64px;padding:14px 18px;background:var(--surface);border:1px solid var(--line-2);border-radius:14px;cursor:pointer;color:var(--ink);font-size:16px;font-weight:500;letter-spacing:-.01em;transition:border-color .15s, box-shadow .2s, transform .12s}
+@media (hover:hover){.opt:hover{border-color:var(--ink);box-shadow:var(--shadow)}}
+.opt:active{transform:scale(.995)}
+.opt .t{flex:1;min-width:0}
+.opt .tick{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;color:transparent;transition:all .15s}
+.opt.sel{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.opt.sel .tick{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* cadastro (junto da última pergunta) */
+form{display:flex;flex-direction:column;gap:16px;padding-top:8px;border-top:1px solid var(--line)}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:14px;font-weight:600}
+.field input{font:inherit;font-size:17px;height:58px;padding:0 18px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);color:var(--ink);transition:border-color .15s, box-shadow .15s}
+.field input::placeholder{color:var(--faint)}
+.field input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--ink) 8%,transparent)}
+.err{color:var(--danger);font-size:13.5px;font-weight:500;min-height:1.2em;margin-top:-4px}
+
+/* vídeo + contato */
+.player{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0b0c0e;box-shadow:var(--shadow);border:1px solid var(--line)}
+.player video,.player iframe,.player #yt{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
+.ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#f4f4f2;text-align:center;padding:20px;
+  background:radial-gradient(120% 90% at 50% 0%, #23252c 0%, #0b0c0e 70%)}
+.ph .play{width:64px;height:64px;border-radius:50%;background:var(--accent);color:#0e0f12;display:grid;place-items:center}
+.ph small{font-size:13px;color:#a1a3aa}
+.vmsg{font-size:14px;color:var(--danger);text-align:center}
+
+.contact{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:18px;transition:border-color .3s, box-shadow .3s}
+.c-top{display:flex;gap:14px;align-items:center}
+.avatar{flex:none;width:60px;height:60px;border-radius:50%;background:linear-gradient(145deg,#ffe14d,#ffb800);color:#0e0f12;display:grid;place-items:center;position:relative;box-shadow:0 0 0 3px var(--surface),0 0 0 4.5px var(--line-2),0 10px 20px -10px rgba(255,184,0,.8)}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.contact.open .avatar{box-shadow:0 0 0 3px var(--surface),0 0 0 4.5px var(--wa),0 10px 20px -10px rgba(255,184,0,.8)}
+.avatar i{position:absolute;right:1px;bottom:1px;width:15px;height:15px;border-radius:50%;background:var(--faint);border:2.5px solid var(--surface);transition:background .3s}
+.c-top div{min-width:0}
+.c-top p{font-size:14px;color:var(--sub);margin-top:2px}
+.watch{display:flex;flex-direction:column;gap:8px}
+.wrow{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}
+.track{height:6px;border-radius:99px;background:var(--line-2);overflow:hidden}
+.track span{display:block;height:100%;width:0;background:var(--ink);border-radius:99px;transition:width .5s ease}
+.actions{display:flex;flex-direction:column;gap:10px}
+.contact.locked .actions{display:none}
+.contact.open{border-color:var(--wa);box-shadow:0 0 0 1px var(--wa), var(--shadow);animation:pop .5s ease}
+.contact.open .avatar i{background:var(--wa)}
+.contact.open .watch{display:none}
+
+@media (max-width:380px){
+  body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .wrap{gap:22px}
+  .contact{padding:18px}
+  .opt{padding:12px 14px;min-height:60px}
+}
+.foot{text-align:center;font-size:12px;color:var(--faint);padding-top:8px}
+
+.enter{animation:enter .45s cubic-bezier(.2,.8,.2,1) both}
+.enter > *{animation:enter .5s cubic-bezier(.2,.8,.2,1) both}
+.enter > *:nth-child(2){animation-delay:.04s}.enter > *:nth-child(3){animation-delay:.08s}
+.enter > *:nth-child(4){animation-delay:.12s}
+@keyframes enter{from{opacity:.001;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="brand"><b id="logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/><path d="M12.5 12.5l-2 3h3l-2 3"/></svg></b>Venda Sem Estoque</header>
+
+  <!-- INÍCIO -->
+  <section class="hero enter" id="s-intro">
+    <span class="eyebrow">Vídeo aula gratuita · Mercado Livre</span>
+    <h1>Venda no Mercado Livre <span class="hl">sem estoque</span></h1>
+    <p class="lede">Como funciona, como escolher o produto certo e o que eu uso para vender mais. Responda 3 perguntas e libere a aula.</p>
+    <button class="btn btn-main" id="start">Começar agora <span class="arr">→</span></button>
+    <p class="note">100% gratuito · leva menos de 1 minuto</p>
+  </section>
+
+  <!-- QUIZ (a última pergunta traz o cadastro) -->
+  <section id="s-q" hidden>
+    <div class="qhead">
+      <div class="segs" id="segs"><i></i><i></i><i></i></div>
+      <div class="qrow">
+        <button class="link" id="back" type="button">← Voltar</button>
+        <span class="eyebrow" id="count">01 / 03</span>
+      </div>
+    </div>
+    <div class="stack" id="qbody">
+      <h2 id="qtext"></h2>
+      <div class="opts" id="opts"></div>
+      <form id="lead" novalidate hidden>
+        <div class="field"><label for="nome">Seu nome</label>
+          <input id="nome" name="nome" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" placeholder="Como posso te chamar?"></div>
+        <div class="field"><label for="email">Seu melhor e-mail</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="voce@email.com"></div>
+        <div class="err" id="err" role="alert"></div>
+        <button class="btn btn-main" type="submit" id="send">Liberar a vídeo aula <span class="arr">→</span></button>
+        <p class="note">Seus dados ficam só comigo. Sem spam.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- VÍDEO AULA + CONTATO -->
+  <section id="s-video" hidden>
+    <div class="stack enter" style="margin-top:0">
+      <div>
+        <h2 id="hello">Sua aula está pronta</h2>
+        <p class="lede" id="pdesc" style="font-size:16.5px;margin-top:10px"></p>
+      </div>
+
+      <div class="player" id="player">
+        <div class="ph" id="ph">
+          <span class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+          <strong>Sua vídeo aula aparece aqui</strong>
+          <small>Coloque o link do vídeo em CONFIG.video</small>
+        </div>
+      </div>
+      <p class="vmsg" id="vmsg" hidden></p>
+
+      <div class="contact locked" id="contact">
+        <div class="c-top">
+          <span class="avatar" id="avatar"><svg id="avIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg><i></i></span>
+          <div>
+            <h3>Fale direto comigo</h3>
+            <p id="cmsg">Assista a aula até o final para liberar o contato.</p>
+          </div>
+        </div>
+        <div class="watch">
+          <div class="wrow"><span>Seu progresso na aula</span><span id="pct">0%</span></div>
+          <div class="track"><span id="bar"></span></div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-wa" id="wa" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>
+            Quero começar
+          </a>
+          <a class="btn btn-line" id="ig" target="_blank" rel="noopener"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Chamar no Instagram</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Resultados variam conforme a dedicação de cada pessoa.</p>
+</div>
+
+<script>
+/* ================== EDITE AQUI ================== */
+const CONFIG = {
+  // Link da vídeo aula. Aceita:
+  //  - YouTube (ex.: https://www.youtube.com/watch?v=XXXXXXXX ou https://youtu.be/XXXXXXXX)
+  //  - Arquivo de vídeo .mp4 (ex.: "aula.mp4" na mesma pasta do index.html)
+  video: "aula.mp4",
+  whatsapp: "5534999999999",                       // seu número: 55 + DDD + número, só dígitos
+  instagram: "https://www.instagram.com/SEU_PERFIL",// seu perfil (deixe "" para esconder o botão)
+  webhook: "",                                     // URL que recebe o lead por POST (Apps Script, Zapier, Make, Formspree...). "" = não envia
+  liberarEm: 0.95,                                 // libera o contato ao assistir 95% da aula
+  foto: ""                                         // sua foto para o card de contato (ex.: "eu.jpg" na mesma pasta). "" = ícone padrão
+};
+/* ================================================ */
+
+const QUESTIONS = [
+  { q:"Você já vende alguma coisa pela internet?", o:[
+    ["Nunca vendi nada", 0],["Já tentei, mas não deu certo", 1],["Vendo pouco hoje", 2],["Já vendo e quero escalar", 3]]},
+  { q:"O que mais te trava para começar no Mercado Livre?", o:[
+    ["Não tenho dinheiro para estoque", 1],["Não sei qual produto vender", 1],["Medo de fornecedor ou golpe", 1],["Não sei fazer anúncio que vende", 2]]},
+  { q:"Quanto tempo por dia você consegue dedicar?", o:[
+    ["Menos de 1 hora", 0],["De 1 a 2 horas", 1],["De 2 a 4 horas", 2],["O dia todo", 3]]}
+];
+
+const PROFILES = [
+  { min:0, name:"Começando do zero",   desc:"Essa aula mostra o caminho mais simples para começar, sem precisar investir em estoque." },
+  { min:4, name:"Pronto para começar", desc:"Você tem vontade e tempo. Nessa aula você vê o método completo." },
+  { min:6, name:"Perfil acelerado",    desc:"Preste atenção na parte de estratégias para escalar as vendas." }
+];
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+const last = QUESTIONS.length - 1;
+let i = 0; const answers = []; let busy = false;
+let lead = { nome:"", perfil:"" };
+
+function show(id){
+  ["s-intro","s-q","s-video"].forEach(s => $(s).hidden = s!==id);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- quiz ---------- */
+function render(){
+  const item = QUESTIONS[i];
+  $("count").textContent = `${pad(i+1)} / ${pad(QUESTIONS.length)}`;
+  [...$("segs").children].forEach((s,k) => s.classList.toggle("on", k <= i));
+  $("qtext").textContent = item.q;
+  const box = $("opts"); box.innerHTML = "";
+  item.o.forEach(([label],n) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opt" + (answers[i]===n ? " sel" : "");
+    b.innerHTML = `<span class="t"></span><span class="tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>`;
+    b.querySelector(".t").textContent = label;
+    b.onclick = () => pick(n);
+    box.appendChild(b);
+  });
+  $("lead").hidden = i !== last;
+  $("err").textContent = "";
+  const body = $("qbody"); body.classList.remove("enter"); void body.offsetWidth; body.classList.add("enter");
+  busy = false;
+}
+function pick(n){
+  if(busy) return;
+  answers[i] = n;
+  [...$("opts").children].forEach((c,k) => c.classList.toggle("sel", k===n));
+  if(i === last){ $("err").textContent = ""; setTimeout(() => $("lead").scrollIntoView({behavior:"smooth", block:"center"}), 150); return; }
+  busy = true;
+  setTimeout(() => { i++; render(); }, 320);
+}
+$("start").onclick = () => { i=0; show("s-q"); render(); };
+$("back").onclick = () => { if(i===0) show("s-intro"); else { i--; render(); } };
+document.addEventListener("keydown", e => {
+  if($("s-q").hidden || /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  const n = parseInt(e.key,10) - 1;
+  if(n >= 0 && n < QUESTIONS[i].o.length) pick(n);
+});
+
+/* ---------- cadastro ---------- */
+$("lead").addEventListener("submit", async e => {
+  e.preventDefault();
+  const nome = $("nome").value.trim();
+  const email = $("email").value.trim();
+  const err = msg => { $("err").textContent = msg; };
+  if(answers[last] === undefined){ err("Escolha uma opção acima para continuar."); return; }
+  if(!nome){ err("Digite seu nome para continuar."); $("nome").focus(); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ err("Digite um e-mail válido, como voce@email.com."); $("email").focus(); return; }
+  err("");
+
+  const score = answers.reduce((s,n,k) => s + QUESTIONS[k].o[n][1], 0);
+  const p = [...PROFILES].reverse().find(x => score >= x.min);
+  const data = { nome, email, perfil:p.name, score, respostas:answers.map((n,k) => QUESTIONS[k].o[n][0]), at:new Date().toISOString() };
+
+  $("send").disabled = true;
+  await sendLead(data);
+  $("send").disabled = false;
+  openLesson(nome, p.name, p.desc);
+});
+
+/* envia o lead sem travar o fluxo: se falhar, a pessoa assiste do mesmo jeito */
+async function sendLead(data){
+  if(!CONFIG.webhook) return;
+  try{
+    await Promise.race([
+      fetch(CONFIG.webhook, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify(data), keepalive:true }),
+      new Promise(r => setTimeout(r, 4000))
+    ]);
+  }catch(_){}
+}
+
+function openLesson(nome, perfil, desc){
+  lead = { nome, perfil };
+  $("hello").textContent = `${nome.split(" ")[0]}, sua aula está pronta`;
+  $("pdesc").textContent = desc + " Assista até o final para liberar o contato direto comigo.";
+  if(CONFIG.foto){
+    const img = document.createElement("img"); img.src = CONFIG.foto; img.alt = ""; img.onload = () => { $("avIcon").hidden = true; $("avatar").prepend(img); };
+  }
+  show("s-video");
+  setupVideo();
+}
+
+/* ---------- contato ---------- */
+/* os links só recebem href quando a aula termina: antes disso não há o que abrir */
+let unlocked = false;
+function setProgress(f){
+  f = Math.max(0, Math.min(1, f));
+  const pct = Math.round(f*100);
+  $("pct").textContent = `${pct}%`;
+  $("bar").style.width = `${pct}%`;
+  if(!unlocked && f >= CONFIG.liberarEm) unlock();
+}
+function unlock(){
+  unlocked = true;
+  clearInterval(poll);
+  const first = lead.nome.split(" ")[0];
+  const msg = `Oi! Sou ${first}, assisti a aula sobre vender no Mercado Livre sem estoque e quero saber mais. Meu perfil no quiz: ${lead.perfil}.`;
+  $("wa").href = `https://wa.me/${CONFIG.whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`;
+  if(CONFIG.instagram) $("ig").href = CONFIG.instagram; else $("ig").hidden = true;
+  const c = $("contact");
+  c.classList.remove("locked"); c.classList.add("open");
+  $("cmsg").textContent = "Contato liberado. Me chama que eu te respondo pessoalmente.";
+  setTimeout(() => c.scrollIntoView({behavior:"smooth", block:"center"}), 400);
+}
+
+/* ---------- vídeo ---------- */
+function ytId(url){
+  const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function videoError(){
+  const m = $("vmsg"); m.hidden = false;
+  m.textContent = "Não foi possível carregar o vídeo. Atualize a página.";
+}
+let watchedMax = 0, poll = 0, videoReady = false;
+function setupVideo(){
+  if(videoReady) return; videoReady = true;
+  const url = (CONFIG.video || "").trim();
+  if(!url){ demoMode(); return; }
+  $("ph").hidden = true;
+  const id = ytId(url);
+  if(id){
+    const holder = document.createElement("div"); holder.id = "yt"; $("player").appendChild(holder);
+    const start = () => {
+      const yt = new YT.Player("yt", { videoId:id, playerVars:{ rel:0, modestbranding:1, playsinline:1 },
+        events:{ onStateChange:e => { if(e.data === YT.PlayerState.ENDED) setProgress(1); } } });
+      poll = setInterval(() => {
+        try{
+          const d = yt.getDuration(), t = yt.getCurrentTime();
+          if(d > 0){ watchedMax = Math.max(watchedMax, Math.min(t, watchedMax + 3)); setProgress(watchedMax / d); }
+        }catch(_){}
+      }, 1000);
+    };
+    if(window.YT && YT.Player) start();
+    else {
+      window.onYouTubeIframeAPIReady = start;
+      const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api";
+      s.onerror = videoError;
+      document.head.appendChild(s);
+    }
+  } else {
+    const v = document.createElement("video");
+    v.src = url; v.controls = true; v.playsInline = true; v.preload = "metadata";
+    v.onerror = videoError;
+    // o player assume o formato do vídeo (vertical ou horizontal), sem barras pretas
+    v.addEventListener("loadedmetadata", () => {
+      if(!v.videoWidth) return;
+      const r = v.videoWidth / v.videoHeight, pl = $("player");
+      pl.style.aspectRatio = r;
+      pl.style.maxWidth = `min(100%, ${(r * 78).toFixed(1)}vh)`;
+      pl.style.marginInline = "auto";
+    });
+    let prev = 0;
+    v.addEventListener("timeupdate", () => {
+      // conta só o que foi assistido: pular para frente não adianta
+      if(v.currentTime - prev < 2) watchedMax = Math.max(watchedMax, v.currentTime);
+      prev = v.currentTime;
+      if(v.duration) setProgress(watchedMax / v.duration);
+    });
+    v.addEventListener("ended", () => setProgress(1));
+    $("player").appendChild(v);
+  }
+}
+/* sem vídeo configurado: simula a aula para você testar o fluxo */
+function demoMode(){
+  const ph = $("ph");
+  ph.querySelector("small").textContent = "Modo de teste: toque no play para simular a aula";
+  const play = ph.querySelector(".play"); play.style.cursor = "pointer";
+  play.onclick = () => {
+    play.onclick = null;
+    ph.querySelector("strong").textContent = "Simulando a aula…";
+    let f = 0; const t = setInterval(() => { f += 0.05; setProgress(f); if(f >= 1) { clearInterval(t); ph.querySelector("strong").textContent = "Fim da aula (teste)"; } }, 200);
+  };
+}
+
+/* ---------- início ---------- */
+</script>
+</body>
+</html>
