@@ -214,7 +214,6 @@ form{display:flex;flex-direction:column;gap:16px;padding-top:8px;border-top:1px 
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>
             Quero começar
           </a>
-          <a class="btn btn-line" id="ig" target="_blank" rel="noopener"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Chamar no Instagram</a>
         </div>
       </div>
     </div>
@@ -230,8 +229,7 @@ const CONFIG = {
   //  - YouTube (ex.: https://www.youtube.com/watch?v=XXXXXXXX ou https://youtu.be/XXXXXXXX)
   //  - Arquivo de vídeo .mp4 (ex.: "aula.mp4" na mesma pasta do index.html)
   video: "aula.mp4",
-  whatsapp: "5534999999999",                       // seu número: 55 + DDD + número, só dígitos
-  instagram: "https://www.instagram.com/SEU_PERFIL",// seu perfil (deixe "" para esconder o botão)
+  whatsapp: "553491767159",                        // seu número: 55 + DDD + número, só dígitos
   webhook: "",                                     // URL que recebe o lead por POST (Apps Script, Zapier, Make, Formspree...). "" = não envia
   liberarEm: 0.95,                                 // libera o contato ao assistir 95% da aula
   foto: ""                                         // sua foto para o card de contato (ex.: "eu.jpg" na mesma pasta). "" = ícone padrão
@@ -360,7 +358,6 @@ function unlock(){
   const first = lead.nome.split(" ")[0];
   const msg = `Oi! Sou ${first}, assisti a aula sobre vender no Mercado Livre sem estoque e quero saber mais. Meu perfil no quiz: ${lead.perfil}.`;
   $("wa").href = `https://wa.me/${CONFIG.whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`;
-  if(CONFIG.instagram) $("ig").href = CONFIG.instagram; else $("ig").hidden = true;
   const c = $("contact");
   c.classList.remove("locked"); c.classList.add("open");
   $("cmsg").textContent = "Contato liberado. Me chama que eu te respondo pessoalmente.";
